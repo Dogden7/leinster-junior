@@ -1,10 +1,10 @@
 {
-  "name": "munster-junior-hosting",
+  "name": "leinster-junior-hosting",
   "private": true,
   "scripts": {
-    "build": "npm --prefix munster-junior run build",
-    "start": "npm --prefix munster-junior start",
-    "test": "npm --prefix munster-junior test"
+    "build": "npm --prefix leinster-junior run build",
+    "start": "npm --prefix leinster-junior start",
+    "test": "npm --prefix leinster-junior test"
   },
   "engines": {
     "node": ">=24 <25"

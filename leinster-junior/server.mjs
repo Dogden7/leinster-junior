@@ -30,7 +30,7 @@ async function loadSheet(id){
    const league=await load();
    const match=league.matches.find(m=>m.fixtureId===id);
    if(!match)throw Error('Unknown fixture');
-   const response=await fetch('https://munsterrugby.sportlomo.com/wp-admin/admin-ajax.php',{method:'POST',body:new URLSearchParams({action:'fixtureInformation',id,hometeam:match.home,awayteam:match.away}),signal:AbortSignal.timeout(20000)});
+   const response=await fetch('https://leinsterrugby.sportlomo.com/wp-admin/admin-ajax.php',{method:'POST',body:new URLSearchParams({action:'fixtureInformation',id,hometeam:match.home,awayteam:match.away}),signal:AbortSignal.timeout(20000)});
    if(!response.ok)throw Error('Team sheet unavailable');
    const sheet={...parseTeamsheet(await response.text()),fixtureId:id,checkedAt:new Date().toISOString()};
    sheets.set(id,sheet);return sheet;
@@ -48,9 +48,9 @@ createServer(async(req,res)=>{
    const sheet=await loadSheet(id);res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify(sheet));
   }
   if(path==='/api/league'){const data=await load();res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify(data));}
-  const files={'/icons/munster-share.png':'icons/munster-share.png','/':'index.html','/index.html':'index.html','/app.js':'app.js','/pwa.js':'pwa.js','/style.css':'style.css','/manifest.webmanifest':'manifest.webmanifest','/sw.js':'sw.js','/icons/icon-192.png':'icons/icon-192.png','/icons/icon-512.png':'icons/icon-512.png','/icons/icon-maskable-512.png':'icons/icon-maskable-512.png','/icons/apple-touch-icon.png':'icons/apple-touch-icon.png'};
+  const files={'/icons/leinster-logo.svg':'icons/leinster-logo.svg','/icons/leinster-share.png':'icons/leinster-share.png','/':'index.html','/index.html':'index.html','/app.js':'app.js','/pwa.js':'pwa.js','/style.css':'style.css','/manifest.webmanifest':'manifest.webmanifest','/sw.js':'sw.js','/icons/icon-192.png':'icons/icon-192.png','/icons/icon-512.png':'icons/icon-512.png','/icons/icon-maskable-512.png':'icons/icon-maskable-512.png','/icons/apple-touch-icon.png':'icons/apple-touch-icon.png'};
   if(!files[path]){res.writeHead(404);return res.end('Not found');}
-  const type=path.endsWith('.png')?'image/png':path.endsWith('.webmanifest')?'application/manifest+json':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html';
+  const type=path.endsWith('.png')?'image/png':path.endsWith('.svg')?'image/svg+xml':path.endsWith('.webmanifest')?'application/manifest+json':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html';
   res.writeHead(200,{'Content-Type':type,'Cache-Control':path==='/sw.js'?'no-cache':'no-store'});res.end(await readFile(root+'public/'+files[path]));
  }catch(e){res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'League data is temporarily unavailable. Please try again.'}));}
-}).listen(Number(process.env.PORT||3000),'0.0.0.0',()=>console.log('Munster Junior app: http://localhost:'+(process.env.PORT||3000)));
+}).listen(Number(process.env.PORT||3000),'0.0.0.0',()=>console.log('Leinster Junior app: http://localhost:'+(process.env.PORT||3000)));

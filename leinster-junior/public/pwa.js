@@ -7,7 +7,7 @@
   const response=await fetch('./manifest.webmanifest');
   if(!response.ok)return;
   const manifest=await response.json();
-  if(manifest.name!=='Munster Junior Rugby')return;
+  if(manifest.name!=='Leinster Junior Rugby')return;
   await navigator.serviceWorker.register('./sw.js');
  }catch{}
 })();

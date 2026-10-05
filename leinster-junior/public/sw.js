@@ -1,8 +1,8 @@
-const CACHE='munster-junior-v15';
+const CACHE='leinster-junior-v1';
 const BASE=new URL('./',self.location.href);
 const SHELL=['./','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./icons/apple-touch-icon.png'].map(p=>new URL(p,BASE).href);
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)));});
-self.addEventListener('activate',event=>{event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('munster-junior-')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})());});
+self.addEventListener('activate',event=>{event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('leinster-junior-')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{
  const url=new URL(event.request.url);
  if(event.request.method!=='GET'||url.origin!==BASE.origin)return;

@@ -1,13 +1,13 @@
 {
   "id": "./",
-  "name": "Munster Junior Rugby",
-  "short_name": "Munster Junior",
-  "description": "Munster Junior Division 1 fixtures, results and league table.",
+  "name": "Leinster Junior Rugby",
+  "short_name": "Leinster Junior",
+  "description": "Leinster League Division 2A fixtures, results and league table.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f5f0",
-  "theme_color": "#a6192e",
+  "background_color": "#f5f8fb",
+  "theme_color": "#005daa",
   "lang": "en-IE",
   "icons": [
     {

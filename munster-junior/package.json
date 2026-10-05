@@ -1,1 +1,0 @@
-{"name":"munster-junior","private":true,"type":"module","scripts":{"start":"node --use-env-proxy server.mjs","build":"node build-preview.mjs","test":"node --test data.test.mjs && node pwa.test.mjs"},"engines":{"node":">=24"}}

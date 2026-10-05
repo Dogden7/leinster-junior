@@ -15,7 +15,7 @@ let online=true;
 const context=vm.createContext({URL,Response,Array,JSON,Error,
  self:{location:{href:'https://example.test/sw.js'},clients:{claim:async()=>{}},addEventListener:(name,fn)=>handlers[name]=fn},
  caches:{open:async()=>cache,keys:async()=>[],delete:async()=>{},match:async r=>cache.match(r)},
- fetch:async()=>{if(!online)throw Error('Offline');return Response.json({matches:[{id:'match'}],table:[{team:'Bandon'}],checkedAt:'2026-10-05T12:00:00Z'});}
+ fetch:async()=>{if(!online)throw Error('Offline');return Response.json({matches:[{id:'match'}],table:[{team:'Cill Dara 1'}],checkedAt:'2026-10-05T12:00:00Z'});}
 });
 vm.runInContext(await readFile(new URL('public/sw.js',import.meta.url),'utf8'),context);
 const request={url:'https://example.test/api/league',method:'GET'};
