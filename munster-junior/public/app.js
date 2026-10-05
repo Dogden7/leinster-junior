@@ -27,8 +27,17 @@ const openSheets=new Set();
 const sheetData=saved('mj-teamsheets',{}),sheetBusy=new Set();
 function sheetMarkup(match,sheet){
  const note=sheet.stale?'<p class="sheet-note">Live connection unavailable. Showing saved team sheet.</p>':'';
- const squad=(name,players)=>'<section class="sheet-squad"><h3>'+esc(short(name))+'</h3>'+ (players.length?'<ol class="sheet-players">'+players.map(p=>'<li><b>'+esc(p.number)+'</b><span>'+esc(p.name)+'</span></li>').join('')+'</ol>':'<p>Team sheet not yet published.</p>')+'</section>';
- return note+'<div class="sheet-squads">'+squad(match.home,sheet.home)+squad(match.away,sheet.away)+'</div>';
+ const numbers=[...new Set([...sheet.home,...sheet.away].map(p=>p.number))].sort((a,b)=>a-b);
+ const player=(players,number,team)=>{
+  const entry=players.find(p=>p.number===number);
+  return '<div class="sheet-player" aria-label="'+esc(short(team))+'"><b>'+esc(number)+'</b><span>'+esc(entry?.name||'—')+'</span></div>';
+ };
+ const missing=(!sheet.home.length||!sheet.away.length)?'<div class="sheet-row sheet-missing"><p>'+(!sheet.home.length?'Team sheet not yet published.':'')+'</p><p>'+(!sheet.away.length?'Team sheet not yet published.':'')+'</p></div>':'';
+ let bench=false;
+ return note+missing+'<div class="sheet-lineup">'+numbers.map(number=>{
+  let divider='';if(number>15&&!bench){bench=true;divider='<h3 class="sheet-divider">Replacements</h3>';}
+  return divider+'<div class="sheet-row">'+player(sheet.home,number,match.home)+player(sheet.away,number,match.away)+'</div>';
+ }).join('')+'</div>';
 }
 async function fetchSheet(id){
  if(sheetBusy.has(id))return;sheetBusy.add(id);
