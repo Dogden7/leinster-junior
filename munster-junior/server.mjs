@@ -23,7 +23,7 @@ createServer(async(req,res)=>{
  const path=new URL(req.url,'http://localhost').pathname;
  try{
   if(path==='/api/league'){const data=await load();res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify(data));}
-  const files={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/pwa.js':'pwa.js','/style.css':'style.css','/manifest.webmanifest':'manifest.webmanifest','/sw.js':'sw.js','/icons/icon-192.png':'icons/icon-192.png','/icons/icon-512.png':'icons/icon-512.png','/icons/icon-maskable-512.png':'icons/icon-maskable-512.png','/icons/apple-touch-icon.png':'icons/apple-touch-icon.png'};
+  const files={'/icons/munster-share.png':'icons/munster-share.png','/':'index.html','/index.html':'index.html','/app.js':'app.js','/pwa.js':'pwa.js','/style.css':'style.css','/manifest.webmanifest':'manifest.webmanifest','/sw.js':'sw.js','/icons/icon-192.png':'icons/icon-192.png','/icons/icon-512.png':'icons/icon-512.png','/icons/icon-maskable-512.png':'icons/icon-maskable-512.png','/icons/apple-touch-icon.png':'icons/apple-touch-icon.png'};
   if(!files[path]){res.writeHead(404);return res.end('Not found');}
   const type=path.endsWith('.png')?'image/png':path.endsWith('.webmanifest')?'application/manifest+json':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html';
   res.writeHead(200,{'Content-Type':type,'Cache-Control':path==='/sw.js'?'no-cache':'no-store'});res.end(await readFile(root+'public/'+files[path]));
