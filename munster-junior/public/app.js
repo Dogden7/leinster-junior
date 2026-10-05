@@ -10,13 +10,18 @@ function clubName(name){
  return '<span class="club-name">'+(logo?'<img class="club-crest" src="'+esc(logo)+'" alt="" width="36" height="36">':'<span class="club-initials" aria-hidden="true">'+esc(initials)+'</span>')+'<span>'+esc(short(name))+'</span></span>';
 }
 const score=s=>/^\d+/.exec(s)?.[0]||s||'—';
+function scoreWithTries(raw){
+ const points=score(raw);
+ const tries=/\(\s*(\d+)/.exec(String(raw??''))?.[1];
+ return esc(points)+(tries!==undefined?'<span class="try-count">('+esc(tries)+'T)</span>':'');
+}
 function resultScore(match){
  const home=score(match.homeScore),away=score(match.awayScore);
  const homeNumber=Number(home),awayNumber=Number(away);
  const comparable=/^\d+$/.test(home)&&/^\d+$/.test(away);
  const homeClass=comparable&&homeNumber!==awayNumber?(homeNumber>awayNumber?'score-win':'score-loss'):'score-draw';
  const awayClass=comparable&&homeNumber!==awayNumber?(awayNumber>homeNumber?'score-win':'score-loss'):'score-draw';
- return '<span class="'+homeClass+'">'+esc(home)+'</span> – <span class="'+awayClass+'">'+esc(away)+'</span>';
+ return '<span class="'+homeClass+'">'+scoreWithTries(match.homeScore)+'</span> <span class="score-separator">–</span> <span class="'+awayClass+'">'+scoreWithTries(match.awayScore)+'</span>';
 }
 function render(){
  if(!data)return;

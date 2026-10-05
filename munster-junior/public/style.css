@@ -16,3 +16,5 @@
 .brand{gap:12px;min-width:0}.brand-logo{width:44px;height:44px;object-fit:contain;flex:0 0 44px}.brand .brand-title{font-size:inherit;letter-spacing:inherit;min-width:0}@media(max-width:540px){.brand{gap:8px}.brand-logo{width:34px;height:34px;flex-basis:34px}.brand .brand-title{font-size:13px;letter-spacing:.6px}header{gap:10px}}
 
 .score-win{color:#008000}.score-loss{color:#90112a}.score-draw{color:#555b52}
+
+.score-separator{color:#000}.try-count{font-size:.6em;font-weight:600;margin-left:2px}@media(max-width:540px){.match{column-gap:7px}.match .score{font-size:18px}}
