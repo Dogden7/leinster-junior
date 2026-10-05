@@ -10,6 +10,14 @@ function clubName(name){
  return '<span class="club-name">'+(logo?'<img class="club-crest" src="'+esc(logo)+'" alt="" width="36" height="36">':'<span class="club-initials" aria-hidden="true">'+esc(initials)+'</span>')+'<span>'+esc(short(name))+'</span></span>';
 }
 const score=s=>/^\d+/.exec(s)?.[0]||s||'—';
+function resultScore(match){
+ const home=score(match.homeScore),away=score(match.awayScore);
+ const homeNumber=Number(home),awayNumber=Number(away);
+ const comparable=/^\d+$/.test(home)&&/^\d+$/.test(away);
+ const homeClass=comparable&&homeNumber!==awayNumber?(homeNumber>awayNumber?'score-win':'score-loss'):'score-draw';
+ const awayClass=comparable&&homeNumber!==awayNumber?(awayNumber>homeNumber?'score-win':'score-loss'):'score-draw';
+ return '<span class="'+homeClass+'">'+esc(home)+'</span> – <span class="'+awayClass+'">'+esc(away)+'</span>';
+}
 function render(){
  if(!data)return;
  if(tab==='table'){
@@ -18,7 +26,7 @@ function render(){
  const items=data.matches.filter(m=>m.type===tab&&(!club||m.home===club||m.away===club)).sort((a,b)=>(Date.parse(a.date)-Date.parse(b.date))*(tab==='results'?-1:1));
  let date='';
  $('#content').innerHTML=items.length?items.map(m=>{let heading='';if(date!==m.date){date=m.date;heading='<h2>'+esc(date)+'</h2>';}
-  return heading+'<article class="match"><div class="team">'+clubName(m.home)+'</div><div class="score">'+(tab==='results'?esc(score(m.homeScore))+' – '+esc(score(m.awayScore)):esc(m.time||'TBC'))+'</div><div class="team away">'+clubName(m.away)+'</div><div class="meta">'+esc(m.venue||'Venue TBC')+(m.comment?' · '+esc(m.comment):'')+'</div></article>';
+  return heading+'<article class="match"><div class="team">'+clubName(m.home)+'</div><div class="score">'+(tab==='results'?resultScore(m):esc(m.time||'TBC'))+'</div><div class="team away">'+clubName(m.away)+'</div><div class="meta">'+esc(m.venue||'Venue TBC')+(m.comment?' · '+esc(m.comment):'')+'</div></article>';
  }).join(''):'<p class="empty">No '+esc(tab)+' published for this selection.</p>';
 }
 async function refresh(){
