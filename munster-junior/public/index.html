@@ -57,7 +57,7 @@ const openSheets=new Set();
 const sheetData=saved('mj-teamsheets',{}),sheetBusy=new Set();
 function sheetMarkup(match,sheet){
  const note=sheet.stale?'<p class="sheet-note">Live connection unavailable. Showing saved team sheet.</p>':'';
- const squad=(name,players)=>'<section class="sheet-squad"><h3>'+clubName(name)+'</h3>'+ (players.length?'<ol class="sheet-players">'+players.map(p=>'<li><b>'+esc(p.number)+'</b><span>'+esc(p.name)+'</span></li>').join('')+'</ol>':'<p>Team sheet not yet published.</p>')+'</section>';
+ const squad=(name,players)=>'<section class="sheet-squad"><h3>'+esc(short(name))+'</h3>'+ (players.length?'<ol class="sheet-players">'+players.map(p=>'<li><b>'+esc(p.number)+'</b><span>'+esc(p.name)+'</span></li>').join('')+'</ol>':'<p>Team sheet not yet published.</p>')+'</section>';
  return note+'<div class="sheet-squads">'+squad(match.home,sheet.home)+squad(match.away,sheet.away)+'</div>';
 }
 async function fetchSheet(id){
