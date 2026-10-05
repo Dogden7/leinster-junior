@@ -11,7 +11,7 @@
   const response=await fetch('./manifest.webmanifest');
   if(!response.ok) return;
   const manifest=await response.json();
-  if(manifest.name!=='Munster Junior Division 1')return;
+  if(manifest.name!=='Munster Junior Rugby')return;
   await navigator.serviceWorker.register('./sw.js');
   await navigator.serviceWorker.ready;
   const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);

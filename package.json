@@ -1,0 +1,12 @@
+{
+  "name": "munster-junior-hosting",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix munster-junior run build",
+    "start": "npm --prefix munster-junior start",
+    "test": "npm --prefix munster-junior test"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  }
+}
