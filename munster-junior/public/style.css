@@ -10,3 +10,5 @@
 @media(max-width:540px){table{table-layout:fixed;font-size:12px}th,td{padding:12px 3px}th{font-size:10px}th:first-child,td:first-child{width:7%}th:nth-child(2),td:nth-child(2){width:43%;min-width:0}td .club-name{gap:5px;width:100%}td .club-name>span:last-child{min-width:0;overflow-wrap:anywhere}td .club-crest,td .club-initials{width:22px;height:22px;flex:0 0 22px}td .club-initials{font-size:9px}}
 
 @media(max-width:540px){th,td{text-align:center}th:first-child,td:first-child{width:7%}th:nth-child(2),td:nth-child(2){width:39%;text-align:left}th:last-child,td:last-child{padding-right:8px}}
+
+.iphone-guide{font-size:13px;color:#686b62;margin:16px 0}.iphone-guide summary{cursor:pointer;width:fit-content;color:var(--red);font-weight:600}.iphone-guide ol{padding-left:22px;line-height:1.7}.iphone-guide p{line-height:1.5}.iphone-guide[hidden],#status[hidden]{display:none}

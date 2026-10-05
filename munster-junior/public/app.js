@@ -22,17 +22,17 @@ function render(){
  }).join(''):'<p class="empty">No '+esc(tab)+' published for this selection.</p>';
 }
 async function refresh(){
- if(busy)return;busy=true;$('#refresh').disabled=true;$('#status').textContent='Checking SportLoMo…';
+ if(busy)return;busy=true;$('#refresh').disabled=true;$('#status').hidden=true;
  try{
   const r=await fetch('/api/league',{signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error();const next=await r.json();
   if(!Array.isArray(next.matches)||!Array.isArray(next.table)||!next.checkedAt)throw Error();
   if(!next.stale)save('mj-data',next);data=next;
   $('#club').innerHTML='<option value="">All clubs</option>'+next.table.map(r=>'<option value="'+esc(r.team)+'">'+esc(short(r.team))+'</option>').join('');
   if(!next.table.some(r=>r.team===club))club='';$('#club').value=club;
-  $('#status').textContent=(next.stale?'Saved data · Unable to check source. Last successful check: ':'Last successful check: ')+new Date(next.checkedAt).toLocaleString('en-IE',{timeZone:'Europe/Dublin'})+' (Ireland)';render();
+  $('#status').hidden=!next.stale;$('#status').textContent=next.stale?'Unable to check live results. Showing saved data.':'';render();
  }catch{
   if(!data)data=saved('mj-data',null);
-  $('#status').textContent=data?'Saved preview · Live connection unavailable. Data last checked '+new Date(data.checkedAt).toLocaleString('en-IE',{timeZone:'Europe/Dublin'})+' (Ireland).':'Unable to load SportLoMo. Please try Refresh shortly.';render();
+  $('#status').hidden=false;$('#status').textContent=data?'Live connection unavailable. Showing saved results.':'Unable to load results. Please try Refresh shortly.';render();
  }finally{busy=false;$('#refresh').disabled=false;}
 }
 $('#refresh').onclick=refresh;
@@ -43,6 +43,6 @@ setInterval(()=>{if(!document.hidden)refresh();},300000);
 if(data){
  $('#club').innerHTML='<option value="">All clubs</option>'+data.table.map(r=>'<option value="'+esc(r.team)+'">'+esc(short(r.team))+'</option>').join('');
  if(!data.table.some(r=>r.team===club))club='';$('#club').value=club;
- $('#status').textContent='Saved data · Checking live connection…';render();
+ render();
 }
 refresh();
