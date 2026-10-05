@@ -54,7 +54,7 @@ function render(){
  const items=data.matches.filter(m=>m.type===tab&&(!club||m.home===club||m.away===club)).sort((a,b)=>(Date.parse(a.date)-Date.parse(b.date))*(tab==='results'?-1:1));
  let date='';
  $('#content').innerHTML=items.length?items.map(m=>{let heading='';if(date!==m.date){date=m.date;heading='<h2>'+esc(date)+'</h2>';}
-  return heading+'<article class="match"><div class="team">'+clubName(m.home)+'</div><div class="score">'+(tab==='results'?resultScore(m):esc(m.time||'TBC'))+'</div><div class="team away">'+clubName(m.away)+'</div><div class="meta">'+esc(m.venue||'Venue TBC')+(m.comment?' · '+esc(m.comment):'')+'</div>'+(m.fixtureId?'<details class="team-sheet" data-sheet="'+esc(m.fixtureId)+'"'+(openSheets.has(m.fixtureId)?' open':'')+'><summary>Team Sheet</summary><div class="sheet-content">'+(sheetData[m.fixtureId]?sheetMarkup(m,sheetData[m.fixtureId]):'<p role="status">Loading team sheet…</p>')+'</div></details>':'')+'</article>';
+  return heading+'<article class="match"><div class="team">'+clubName(m.home)+'</div><div class="score">'+(tab==='results'?resultScore(m):esc(m.time||'TBC'))+'</div><div class="team away">'+clubName(m.away)+'</div><div class="meta">'+esc(m.venue||'Venue TBC')+(m.comment?' · '+esc(m.comment):'')+'</div>'+(tab==='results'&&m.fixtureId?'<details class="team-sheet" data-sheet="'+esc(m.fixtureId)+'"'+(openSheets.has(m.fixtureId)?' open':'')+'><summary>Team Sheet</summary><div class="sheet-content">'+(sheetData[m.fixtureId]?sheetMarkup(m,sheetData[m.fixtureId]):'<p role="status">Loading team sheet…</p>')+'</div></details>':'')+'</article>';
  }).join(''):'<p class="empty">No '+esc(tab)+' published for this selection.</p>';
 }
 $('#content').addEventListener('toggle',event=>{
