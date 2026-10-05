@@ -3,7 +3,7 @@ function saved(k,fallback){try{return JSON.parse(localStorage.getItem(k))??fallb
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
 let data=saved('mj-data',null)||window.MJ_SNAPSHOT,tab='results',club=saved('mj-club',''),busy=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const short=s=>s.replace(/ RFC 1st XV$/,'');
+const short=s=>s.replace(/(?: RFC 1st XV| 1)$/,'');
 function clubName(name){
  const logo=window.MJ_LOGOS?.[name];
  const initials=short(name).split(/\s+/).slice(0,2).map(w=>w[0]).join('');
