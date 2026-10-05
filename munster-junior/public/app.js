@@ -23,6 +23,29 @@ function resultScore(match){
  const awayClass=comparable&&homeNumber!==awayNumber?(awayNumber>homeNumber?'score-win':'score-loss'):'score-draw';
  return '<span class="'+homeClass+'">'+scoreWithTries(match.homeScore)+'</span> <span class="score-separator">–</span> <span class="'+awayClass+'">'+scoreWithTries(match.awayScore)+'</span>';
 }
+const openSheets=new Set();
+const sheetData=saved('mj-teamsheets',{}),sheetBusy=new Set();
+function sheetMarkup(match,sheet){
+ const note=sheet.stale?'<p class="sheet-note">Live connection unavailable. Showing saved team sheet.</p>':'';
+ const squad=(name,players)=>'<section class="sheet-squad"><h3>'+clubName(name)+'</h3>'+ (players.length?'<ol class="sheet-players">'+players.map(p=>'<li><b>'+esc(p.number)+'</b><span>'+esc(p.name)+'</span></li>').join('')+'</ol>':'<p>Team sheet not yet published.</p>')+'</section>';
+ return note+'<div class="sheet-squads">'+squad(match.home,sheet.home)+squad(match.away,sheet.away)+'</div>';
+}
+async function fetchSheet(id){
+ if(sheetBusy.has(id))return;sheetBusy.add(id);
+ const match=data.matches.find(m=>m.fixtureId===id);
+ try{
+  const response=await fetch('/api/teamsheet?id='+encodeURIComponent(id),{signal:AbortSignal.timeout(25000)});
+  if(!response.ok)throw Error();
+  const sheet=await response.json();
+  if(!Array.isArray(sheet.home)||!Array.isArray(sheet.away))throw Error();
+  sheetData[id]=sheet;if(!sheet.stale)save('mj-teamsheets',sheetData);
+  const panel=document.querySelector('[data-sheet="'+id+'"] .sheet-content');
+  if(panel&&match)panel.innerHTML=sheetMarkup(match,sheet);
+ }catch{
+  const panel=document.querySelector('[data-sheet="'+id+'"] .sheet-content');
+  if(panel)panel.innerHTML=sheetData[id]&&match?sheetMarkup(match,{...sheetData[id],stale:true}):'<p role="status">Unable to load team sheet. Close and reopen to retry.</p>';
+ }finally{sheetBusy.delete(id);}
+}
 function render(){
  if(!data)return;
  if(tab==='table'){
@@ -31,9 +54,15 @@ function render(){
  const items=data.matches.filter(m=>m.type===tab&&(!club||m.home===club||m.away===club)).sort((a,b)=>(Date.parse(a.date)-Date.parse(b.date))*(tab==='results'?-1:1));
  let date='';
  $('#content').innerHTML=items.length?items.map(m=>{let heading='';if(date!==m.date){date=m.date;heading='<h2>'+esc(date)+'</h2>';}
-  return heading+'<article class="match"><div class="team">'+clubName(m.home)+'</div><div class="score">'+(tab==='results'?resultScore(m):esc(m.time||'TBC'))+'</div><div class="team away">'+clubName(m.away)+'</div><div class="meta">'+esc(m.venue||'Venue TBC')+(m.comment?' · '+esc(m.comment):'')+'</div></article>';
+  return heading+'<article class="match"><div class="team">'+clubName(m.home)+'</div><div class="score">'+(tab==='results'?resultScore(m):esc(m.time||'TBC'))+'</div><div class="team away">'+clubName(m.away)+'</div><div class="meta">'+esc(m.venue||'Venue TBC')+(m.comment?' · '+esc(m.comment):'')+'</div>'+(m.fixtureId?'<details class="team-sheet" data-sheet="'+esc(m.fixtureId)+'"'+(openSheets.has(m.fixtureId)?' open':'')+'><summary>Team Sheet</summary><div class="sheet-content">'+(sheetData[m.fixtureId]?sheetMarkup(m,sheetData[m.fixtureId]):'<p role="status">Loading team sheet…</p>')+'</div></details>':'')+'</article>';
  }).join(''):'<p class="empty">No '+esc(tab)+' published for this selection.</p>';
 }
+$('#content').addEventListener('toggle',event=>{
+ const details=event.target;
+ if(!details.matches('details[data-sheet]'))return;
+ const id=details.dataset.sheet;
+ if(details.open){openSheets.add(id);fetchSheet(id);}else openSheets.delete(id);
+},true);
 async function refresh(){
  if(busy)return;busy=true;$('#refresh').disabled=true;$('#status').hidden=true;
  try{
@@ -42,7 +71,7 @@ async function refresh(){
   if(!next.stale)save('mj-data',next);data=next;
   $('#club').innerHTML='<option value="">All clubs</option>'+next.table.map(r=>'<option value="'+esc(r.team)+'">'+esc(short(r.team))+'</option>').join('');
   if(!next.table.some(r=>r.team===club))club='';$('#club').value=club;
-  $('#status').hidden=!next.stale;$('#status').textContent=next.stale?'Unable to check live results. Showing saved data.':'';render();
+  $('#status').hidden=!next.stale;$('#status').textContent=next.stale?'Unable to check live results. Showing saved data.':'';render();for(const id of openSheets)fetchSheet(id);
  }catch{
   if(!data)data=saved('mj-data',null);
   $('#status').hidden=false;$('#status').textContent=data?'Live connection unavailable. Showing saved results.':'Unable to load results. Please try Refresh shortly.';render();

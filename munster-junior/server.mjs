@@ -2,6 +2,7 @@ import {createServer} from 'node:http';
 import {readFile,writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {parse,SOURCE} from './data.mjs';
+import {parseTeamsheet} from './teamsheets.mjs';
 const root=fileURLToPath(new URL('.',import.meta.url));
 let cache=null,inflight=null;
 async function load(){
@@ -19,9 +20,33 @@ async function load(){
   throw e;
  }finally{inflight=null;}})();return inflight;
 }
+const sheets=new Map(),sheetRequests=new Map();
+async function loadSheet(id){
+ const previous=sheets.get(id);
+ if(previous&&Date.now()-Date.parse(previous.checkedAt)<60000)return previous;
+ if(sheetRequests.has(id))return sheetRequests.get(id);
+ const request=(async()=>{
+  try{
+   const league=await load();
+   const match=league.matches.find(m=>m.fixtureId===id);
+   if(!match)throw Error('Unknown fixture');
+   const response=await fetch('https://munsterrugby.sportlomo.com/wp-admin/admin-ajax.php',{method:'POST',body:new URLSearchParams({action:'fixtureInformation',id,hometeam:match.home,awayteam:match.away}),signal:AbortSignal.timeout(20000)});
+   if(!response.ok)throw Error('Team sheet unavailable');
+   const sheet={...parseTeamsheet(await response.text()),fixtureId:id,checkedAt:new Date().toISOString()};
+   sheets.set(id,sheet);return sheet;
+  }catch(error){if(previous)return {...previous,stale:true};throw error;}
+  finally{sheetRequests.delete(id);}
+ })();
+ sheetRequests.set(id,request);return request;
+}
 createServer(async(req,res)=>{
  const path=new URL(req.url,'http://localhost').pathname;
  try{
+  if(path==='/api/teamsheet'){
+   const id=new URL(req.url,'http://localhost').searchParams.get('id');
+   if(!/^\d{1,12}$/.test(id||'')){res.writeHead(400);return res.end('Invalid fixture');}
+   const sheet=await loadSheet(id);res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify(sheet));
+  }
   if(path==='/api/league'){const data=await load();res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify(data));}
   const files={'/icons/munster-share.png':'icons/munster-share.png','/':'index.html','/index.html':'index.html','/app.js':'app.js','/pwa.js':'pwa.js','/style.css':'style.css','/manifest.webmanifest':'manifest.webmanifest','/sw.js':'sw.js','/icons/icon-192.png':'icons/icon-192.png','/icons/icon-512.png':'icons/icon-512.png','/icons/icon-maskable-512.png':'icons/icon-maskable-512.png','/icons/apple-touch-icon.png':'icons/apple-touch-icon.png'};
   if(!files[path]){res.writeHead(404);return res.end('Not found');}

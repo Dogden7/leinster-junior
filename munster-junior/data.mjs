@@ -5,7 +5,9 @@ export function parse(html){
  for(const m of html.matchAll(/<ul\b([^>]*class="[^"]*table-body (?:fixtures|results)[^"]*"[^>]*)>/g)){
   const a=Object.fromEntries([...m[1].matchAll(/data-([\w-]+)="([^"]*)"/g)].map(x=>[x[1],clean(x[2])]));
   if(a.compname!=='Junior League Division 1')continue;
-  matches.push({id:[a.date,a.hometeam,a.awayteam].join('|'),date:a.date,time:a.time,home:a.hometeam,away:a.awayteam,homeScore:a.homescore,awayScore:a.awayscore,venue:a.venue,comment:a.comment,type:m[1].includes('table-body results')?'results':'fixtures'});
+  const end=html.indexOf('</ul>',m.index+m[0].length);
+  const fixtureId=/data-fid="(\d+)"/.exec(html.slice(m.index,end))?.[1]||null;
+  matches.push({fixtureId,id:[a.date,a.hometeam,a.awayteam].join('|'),date:a.date,time:a.time,home:a.hometeam,away:a.awayteam,homeScore:a.homescore,awayScore:a.awayscore,venue:a.venue,comment:a.comment,type:m[1].includes('table-body results')?'results':'fixtures'});
  }
  const tableBlock=html.match(/<h3>League Table Junior League Division 1<\/h3>\s*<table[\s\S]*?<\/table>/)?.[0];
  const table=[];
