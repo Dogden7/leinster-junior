@@ -1,0 +1,17 @@
+{
+ "id":"./",
+ "name":"Munster Junior Division 1",
+ "short_name":"Munster Junior",
+ "description":"Munster Junior Division 1 fixtures, results and league table.",
+ "start_url":"./",
+ "scope":"./",
+ "display":"standalone",
+ "background_color":"#f6f5f0",
+ "theme_color":"#a6192e",
+ "lang":"en-IE",
+ "icons":[
+  {"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+  {"src":"./icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+  {"src":"./icons/icon-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+ ]
+}

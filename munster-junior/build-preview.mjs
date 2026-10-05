@@ -1,0 +1,16 @@
+import {readFile,writeFile} from 'node:fs/promises';
+const root=new URL('.',import.meta.url);
+const read=p=>readFile(new URL(p,root),'utf8');
+let html=await read('page-template.html');
+const css=await read('public/style.css');
+const js=await read('public/app.js');
+const pwa=await read('public/pwa.js');
+const snapshot=JSON.parse(await read('snapshot.json'));
+const logos=JSON.parse(await read('club-logos.json'));
+const safe=s=>s.replace(/<\/script/gi,'<\\/script');
+html=html.replace('<link rel="stylesheet" href="/style.css">','<style>'+css+'</style>');
+html=html.replace('<script src="/app.js" defer></script>','');
+html=html.replace('<script src="/pwa.js" defer></script>','');
+html=html.replace('</body>','<script>window.MJ_SNAPSHOT='+safe(JSON.stringify(snapshot))+';window.MJ_LOGOS='+safe(JSON.stringify(logos))+';</script><script>'+safe(js)+'</script><script>'+safe(pwa)+'</script></body>');
+await writeFile(new URL('public/index.html',root),html);
+console.log('Built self-contained preview with '+snapshot.table.length+' clubs and '+snapshot.matches.length+' matches.');
